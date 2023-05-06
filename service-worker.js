@@ -18,18 +18,14 @@ self.addEventListener('fetch', event => {
 	)
 })
 
-function fetchNewData(event, cache, cachedFile) {
+function fetchNewData(event, cache) {
 	return fetch(event.request)
 	.then(networkResponse => {
 		if (networkResponse.status == 200) cache.put(event.request, networkResponse.clone())
-		if (cachedFile && event.clientId) {
-			networkResponse.clone().blob()
-			.then(response => {
-				if (response.size === cachedFile.size) return
-				self.clients.get(event.clientId)
-				.then(client => {
-					client?.postMessage('update')
-				})
+		if (event.clientId) {
+			self.clients.get(event.clientId)
+			.then(client => {
+				client?.postMessage('update')
 			})
 		}
 		return networkResponse
