@@ -18,9 +18,6 @@ img, svg {
 	-webkit-user-drag: none;
 	user-drag: none;
 }
-body {
-	background-color: #121212;
-}
 main {
 	display: flex;
 	justify-content: center;
@@ -103,10 +100,9 @@ mark.exceeded {
 	animation: shake 1s linear infinite;
 }
 mark.exceeded span:before, mark.exceeded span:last-of-type::after {
-	background-color: red;
+	background-color: #ff0028;
 }
 section {
-	color: #fff;
 	text-align: center;
 	font-size: 2em;
 	margin-bottom: .5em;
@@ -114,7 +110,7 @@ section {
 	transition: color 250ms ease-in-out;
 }
 section.exceeded {
-	color: red;
+	color: #ff0028;
 	font-weight: bold;
 }
 footer {
@@ -134,8 +130,6 @@ input {
 	line-height: 0;
 	text-align: right;
 	border: none;
-	background-color: rgba(255,255,255,0.1);
-	color: #fff;
 }
 input:disabled {
 	-webkit-user-drag: none;
@@ -175,6 +169,25 @@ button:hover :before {
 }
 button:not(:hover) :before {
 	animation: fadeout 250ms ease-in-out forwards;
+}
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #121212;
+	}
+	section, input {
+		color: #fff;
+	}
+	input {
+		background-color: rgba(255,255,255,0.1);
+	}
+}
+@media (prefers-color-scheme: light) {
+	section, input {
+		color: #333;
+	}
+	input {
+		background-color: rgba(0,0,0,0.1);
+	}
 }
 @keyframes fadein {
 	from {
