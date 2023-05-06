@@ -1,13 +1,11 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
-var audioPlaying = false
 var audioAuthorized = false
 var wakeLock
 const worker = new Worker('./js/worker.js')
 
 navigator.serviceWorker?.register('service-worker.js')
 navigator.serviceWorker.onmessage = m => {
-	console.info('Update found!')
 	if (m?.data == 'update') location.reload(true)
 }
 
@@ -26,15 +24,23 @@ worker.onmessage = e => {
 	document.querySelector('section').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
 	if (!document.querySelector('mark').classList.contains('started')) document.querySelector('mark').classList.add('started')
 	if (e.data > maxTime) {
+		if (document.querySelector('mark').classList.contains('alert')) document.querySelector('mark').classList.remove('alert')
+		if (document.querySelector('section').classList.contains('alert')) document.querySelector('section').classList.remove('alert')
 		if (!document.querySelector('mark').classList.contains('exceeded')) document.querySelector('mark').classList.add('exceeded')
 		if (!document.querySelector('section').classList.contains('exceeded')) document.querySelector('section').classList.add('exceeded')
-	}
-	if (e.data >= (maxTime - 14000) && !audioPlaying) {
-		document.querySelector('section').classList.add('alert')
-		document.querySelector('audio').currentTime = 0
-		document.querySelector('audio').volume = 1
-		document.querySelector('audio').play()
-		audioPlaying = true
+	} else if (e.data >= (maxTime - 10000)) {
+		if (document.querySelector('mark').classList.contains('warning')) document.querySelector('mark').classList.remove('warning')
+		if (document.querySelector('section').classList.contains('warning')) document.querySelector('section').classList.remove('warning')
+		if (!document.querySelector('mark').classList.contains('alert')) document.querySelector('mark').classList.add('alert')
+		if (!document.querySelector('section').classList.contains('alert')) document.querySelector('section').classList.add('alert')
+	} else if (e.data >= (maxTime - 14000)) {
+		if (document.querySelector('audio').currentTime <= 0) {
+			document.querySelector('audio').currentTime = 0
+			document.querySelector('audio').volume = 1
+			document.querySelector('audio').play()
+		}
+		if (!document.querySelector('mark').classList.contains('warning')) document.querySelector('mark').classList.add('warning')
+		if (!document.querySelector('section').classList.contains('warning')) document.querySelector('section').classList.add('warning')
 	}
 }
 
@@ -52,21 +58,19 @@ init = () => {
 		if (started) {
 			started = false
 			worker.postMessage('stop')
-			document.querySelector('mark').classList.remove('started')
+			document.querySelector('audio').currentTime = 0
+			document.querySelector('mark').classList.remove('started', 'warning', 'alert', 'exceeded')
 			document.querySelector('button .material-icons').innerText = 'play_arrow'
 			document.querySelector('#sand-top').style.setProperty('--h', `0`)
 			document.querySelector('#sand-bottom').style.setProperty('--h', `0`)
 			document.querySelector('section').innerText = '00:00'
-			document.querySelector('section').classList.remove('exceeded')
-			document.querySelector('section').classList.remove('alert')
-			document.querySelector('mark').classList.remove('exceeded')
+			document.querySelector('section').classList.remove('warning', 'alert', 'exceeded')
 			document.querySelector('input').removeAttribute('disabled')
 			document.querySelector('audio').pause()
 			try { wakeLock?.release() } catch(e) {}
 		} else {
 			try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
 			started = true
-			audioPlaying = false
 			worker.postMessage('start')
 			document.querySelector('button .material-icons').innerText = 'pause'
 			document.querySelector('input').setAttribute('disabled', 'disabled')
@@ -76,6 +80,7 @@ init = () => {
 			document.querySelector('audio').volume = 0
 			document.querySelector('audio').play()
 			document.querySelector('audio').pause()
+			document.querySelector('audio').currentTime = 0
 			audioAuthorized = true
 		}
 	}
