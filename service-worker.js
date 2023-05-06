@@ -11,6 +11,7 @@ self.addEventListener('fetch', event => {
 				let fetchedResponse = fetch(event.request)
 				.then(networkResponse => {
 					if (networkResponse.status == 200) cache.put(event.request, networkResponse.clone())
+					return networkResponse
 				})
 				return cachedResponse || fetchedResponse
 			})
