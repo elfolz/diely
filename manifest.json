@@ -4,7 +4,7 @@
 	"short_name": "Diely",
 	"description": "Diely - Controle o tempo das suas dailies",
 	"display": "standalone",
-	"orientation": "landscape",
+	"orientation": "portrait",
 	"background_color": "#000",
 	"theme_color": "#1f75fe",
 	"icons": [
