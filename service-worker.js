@@ -17,6 +17,7 @@ self.addEventListener('fetch', event => {
 				} else {
 					fetchedResponse = fetchNewData(event, cache)
 				}
+				return cachedResponse || fetchedResponse
 			})
 		})
 		.catch(() => {
