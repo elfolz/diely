@@ -11,12 +11,12 @@ self.addEventListener('fetch', event => {
 				let cachedFile = cachedResponse?.clone().blob()
 				let fetchedResponse
 				if (cachedFile) {
-				cachedFile.then(response => {
-					fetchedResponse = fetchNewData(event, cache, response)
-				})
-			} else {
-				fetchedResponse = fetchNewData(event, cache)
-			}
+					cachedFile.then(response => {
+						fetchedResponse = fetchNewData(event, cache, response)
+					})
+				} else {
+					fetchedResponse = fetchNewData(event, cache)
+				}
 			})
 		})
 		.catch(() => {

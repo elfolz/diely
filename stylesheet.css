@@ -81,7 +81,7 @@ mark span:last-of-type:after {
 mark span:last-of-type div {
 	position: absolute;
 	left: 50%;
-	bottom: var(--h);
+	bottom: calc(var(--h) - 1px);
 	width: 0;
 	height: 0;
 	border-style: solid;
