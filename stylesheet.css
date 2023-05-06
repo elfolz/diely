@@ -13,6 +13,8 @@
 :root {
 	--color-primary: #1f75fe;
 	--color-accent: #00fa9a;
+	--color-warning: #ffcc00;
+	--color-alert: #ff0028;
 }
 img, svg {
 	-webkit-user-drag: none;
@@ -100,7 +102,7 @@ mark.exceeded {
 	animation: shake 1s linear infinite;
 }
 mark.exceeded span:before, mark.exceeded span:last-of-type::after {
-	background-color: #ff0028;
+	background-color: var(--color-alert);
 }
 section {
 	text-align: center;
@@ -110,11 +112,11 @@ section {
 	transition: color 250ms ease-in-out;
 }
 section:not(.exceeded).alert {
-	color: #ffcc00;
+	color: var(--color-warning);
 	font-weight: bold;
 }
 section.exceeded {
-	color: #ff0028;
+	color: var(--color-alert);
 	font-weight: bold;
 }
 footer {

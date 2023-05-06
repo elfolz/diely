@@ -1,6 +1,7 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
 var audioPlaying = false
+var audioAuthorized = false
 var wakeLock
 const worker = new Worker('./js/worker.js')
 
@@ -31,6 +32,7 @@ worker.onmessage = e => {
 	if (e.data >= (maxTime - 14000) && !audioPlaying) {
 		document.querySelector('section').classList.add('alert')
 		document.querySelector('audio').currentTime = 0
+		document.querySelector('audio').volume = 1
 		document.querySelector('audio').play()
 		audioPlaying = true
 	}
@@ -69,6 +71,12 @@ init = () => {
 			document.querySelector('button .material-icons').innerText = 'pause'
 			document.querySelector('input').setAttribute('disabled', 'disabled')
 			setMaxTime()
+		}
+		if (!audioAuthorized) {
+			document.querySelector('audio').volume = 0
+			document.querySelector('audio').play()
+			document.querySelector('audio').pause()
+			audioAuthorized = true
 		}
 	}
 	IMask(document.querySelector('input'), {
