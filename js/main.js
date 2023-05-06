@@ -1,6 +1,6 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
-const worker = new Worker('/js/worker.js')
+const worker = new Worker('./js/worker.js')
 
 worker.onmessage = e => {
 	if (!started) return
