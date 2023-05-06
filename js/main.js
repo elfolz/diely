@@ -2,6 +2,12 @@ var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
 const worker = new Worker('./js/worker.js')
 
+navigator.serviceWorker?.register('service-worker.js')
+navigator.serviceWorker.onmessage = m => {
+	console.info('Update found!')
+	if (m?.data == 'update') location.reload(true)
+}
+
 worker.onmessage = e => {
 	if (!started) return
 	const time = parseInt(e.data / 1000)
