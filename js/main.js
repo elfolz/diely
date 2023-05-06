@@ -1,5 +1,6 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
+var audioPlaying = false
 var wakeLock
 const worker = new Worker('./js/worker.js')
 
@@ -27,6 +28,12 @@ worker.onmessage = e => {
 		if (!document.querySelector('mark').classList.contains('exceeded')) document.querySelector('mark').classList.add('exceeded')
 		if (!document.querySelector('section').classList.contains('exceeded')) document.querySelector('section').classList.add('exceeded')
 	}
+	if (e.data >= (maxTime - 14000) && !audioPlaying) {
+		document.querySelector('section').classList.add('alert')
+		document.querySelector('audio').currentTime = 0
+		document.querySelector('audio').play()
+		audioPlaying = true
+	}
 }
 
 setMaxTime = () =>{
@@ -49,12 +56,15 @@ init = () => {
 			document.querySelector('#sand-bottom').style.setProperty('--h', `0`)
 			document.querySelector('section').innerText = '00:00'
 			document.querySelector('section').classList.remove('exceeded')
+			document.querySelector('section').classList.remove('alert')
 			document.querySelector('mark').classList.remove('exceeded')
 			document.querySelector('input').removeAttribute('disabled')
+			document.querySelector('audio').pause()
 			try { wakeLock?.release() } catch(e) {}
 		} else {
 			try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
 			started = true
+			audioPlaying = false
 			worker.postMessage('start')
 			document.querySelector('button .material-icons').innerText = 'pause'
 			document.querySelector('input').setAttribute('disabled', 'disabled')

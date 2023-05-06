@@ -104,10 +104,14 @@ mark.exceeded span:before, mark.exceeded span:last-of-type::after {
 }
 section {
 	text-align: center;
-	font-size: 2em;
+	font-size: 3em;
 	margin-bottom: .5em;
 	width: 100%;
 	transition: color 250ms ease-in-out;
+}
+section:not(.exceeded).alert {
+	color: #ffcc00;
+	font-weight: bold;
 }
 section.exceeded {
 	color: #ff0028;
