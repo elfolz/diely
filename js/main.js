@@ -1,5 +1,6 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
 var started = false
+var wakeLock
 const worker = new Worker('./js/worker.js')
 
 navigator.serviceWorker?.register('service-worker.js')
@@ -50,7 +51,9 @@ init = () => {
 			document.querySelector('section').classList.remove('exceeded')
 			document.querySelector('mark').classList.remove('exceeded')
 			document.querySelector('input').removeAttribute('disabled')
+			try { wakeLock?.release() } catch(e) {}
 		} else {
+			try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
 			started = true
 			worker.postMessage('start')
 			document.querySelector('button .material-icons').innerText = 'pause'
