@@ -172,21 +172,25 @@ button:not(:hover) :before {
 }
 @media (prefers-color-scheme: dark) {
 	body {
-		background-color: #121212;
-	}
-	section, input {
 		color: #fff;
+		background-color: #121212;
 	}
 	input {
 		background-color: rgba(255,255,255,0.1);
 	}
+	section, input, .material-icons {
+		color: #fff;
+	}
 }
 @media (prefers-color-scheme: light) {
-	section, input {
+	body {
 		color: #333;
 	}
 	input {
 		background-color: rgba(0,0,0,0.1);
+	}
+	section, input, .material-icons {
+		color: #333;
 	}
 }
 @keyframes fadein {
