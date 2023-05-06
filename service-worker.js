@@ -8,15 +8,10 @@ self.addEventListener('fetch', event => {
 		.then(cache => {
 			return cache.match(event.request)
 			.then(cachedResponse => {
-				let cachedFile = cachedResponse?.clone().blob()
-				let fetchedResponse
-				if (cachedFile) {
-					cachedFile.then(response => {
-						fetchedResponse = fetchNewData(event, cache, response)
-					})
-				} else {
-					fetchedResponse = fetchNewData(event, cache)
-				}
+				let fetchedResponse = fetch(event.request)
+				.then(networkResponse => {
+					if (networkResponse.status == 200) cache.put(event.request, networkResponse.clone())
+				})
 				return cachedResponse || fetchedResponse
 			})
 		})
@@ -25,21 +20,3 @@ self.addEventListener('fetch', event => {
 		})
 	)
 })
-
-function fetchNewData(event, cache, cachedFile) {
-	return fetch(event.request)
-	.then(networkResponse => {
-		if (networkResponse.status == 200) cache.put(event.request, networkResponse.clone())
-		if (cachedFile && event.clientId) {
-			networkResponse.clone().blob()
-			.then(response => {
-				if (response.size === cachedFile.size) return
-				self.clients.get(event.clientId)
-				.then(client => {
-					client?.postMessage('update')
-				})
-			})
-		}
-		return networkResponse
-	})
-}
