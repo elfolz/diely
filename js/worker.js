@@ -8,8 +8,8 @@ start = () => {
 }
 
 stop = () => {
-	postMessage(0)
 	clearInterval(int)
+	postMessage(0)
 }
 
 onmessage = e => {
