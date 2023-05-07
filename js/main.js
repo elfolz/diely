@@ -53,36 +53,49 @@ setMaxTime = () =>{
 	localStorage.setItem('maxTime', maxTime)
 }
 
+toggleCount = () => {
+	started ? stopCount() : startCount()
+}
+
+startCount = () => {
+	if (started) return
+	try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
+	started = true
+	worker.postMessage('start')
+	document.querySelector('button .material-icons').innerText = 'pause'
+	document.querySelector('input').setAttribute('disabled', 'disabled')
+	setMaxTime()
+}
+
+stopCount = () => {
+	if (!started) return
+	started = false
+	worker.postMessage('stop')
+	document.querySelector('audio').currentTime = 0
+	document.querySelector('mark').classList.remove('started', 'warning', 'alert', 'exceeded')
+	document.querySelector('button .material-icons').innerText = 'play_arrow'
+	document.querySelector('#sand-top').style.setProperty('--h', `0`)
+	document.querySelector('#sand-bottom').style.setProperty('--h', `0`)
+	document.querySelector('section').innerText = '00:00'
+	document.querySelector('section').classList.remove('warning', 'alert', 'exceeded')
+	document.querySelector('input').removeAttribute('disabled')
+	document.querySelector('audio').pause()
+	try { wakeLock?.release() } catch(e) {}
+}
+
 init = () => {
-	document.querySelector('button').onclick = () => {
-		if (started) {
-			started = false
-			worker.postMessage('stop')
-			document.querySelector('audio').currentTime = 0
-			document.querySelector('mark').classList.remove('started', 'warning', 'alert', 'exceeded')
-			document.querySelector('button .material-icons').innerText = 'play_arrow'
-			document.querySelector('#sand-top').style.setProperty('--h', `0`)
-			document.querySelector('#sand-bottom').style.setProperty('--h', `0`)
-			document.querySelector('section').innerText = '00:00'
-			document.querySelector('section').classList.remove('warning', 'alert', 'exceeded')
-			document.querySelector('input').removeAttribute('disabled')
-			document.querySelector('audio').pause()
-			try { wakeLock?.release() } catch(e) {}
-		} else {
-			try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
-			started = true
-			worker.postMessage('start')
-			document.querySelector('button .material-icons').innerText = 'pause'
-			document.querySelector('input').setAttribute('disabled', 'disabled')
-			setMaxTime()
-		}
-		if (!audioAuthorized) {
-			document.querySelector('audio').volume = 0
-			document.querySelector('audio').play()
-			document.querySelector('audio').pause()
-			document.querySelector('audio').currentTime = 0
-			audioAuthorized = true
-		}
+	document.querySelector('button').onclick = () => toggleCount()
+	window.onkeydown = e => {
+		if (e.keyCode == 13) startCount()
+		if (e.keyCode == 27) stopCount()
+		if (e.keyCode == 32) toggleCount()
+	}
+	if (!audioAuthorized) {
+		document.querySelector('audio').volume = 0
+		document.querySelector('audio').play()
+		document.querySelector('audio').pause()
+		document.querySelector('audio').currentTime = 0
+		audioAuthorized = true
 	}
 	IMask(document.querySelector('input'), {
 		mask: '00:00',
