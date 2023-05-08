@@ -150,7 +150,7 @@ footer {
 }
 input {
 	border-radius: 6px;
-	margin-right: .5em;
+	margin: 0 .5em;
 	font-size: 1.75em;
 	width: 3.5em;
 	line-height: 0;
@@ -172,7 +172,6 @@ button {
 	align-items: center;
 	height: 3em;
 	border-radius: 6px;
-	background-color: var(--color-primary);
 	border: none;
 	cursor: pointer;
 	overflow: hidden;
@@ -197,6 +196,13 @@ button:hover :before {
 button:not(:hover) :before {
 	animation: fadeout 250ms ease-in-out forwards;
 }
+button.round {
+	aspect-ratio: 1/1;
+	border-radius: 50%;
+}
+#play {
+	background-color: var(--color-primary);
+}
 .material-icons {
 	color: var(--color-text);
 }
@@ -207,7 +213,7 @@ button:not(:hover) :before {
 	body {
 		background-color: #121212;
 	}
-	input {
+	input, #sound {
 		background-color: rgba(255,255,255,0.1);
 	}
 }
@@ -215,7 +221,7 @@ button:not(:hover) :before {
 	:root {
 		--color-text: #333;
 	}
-	input {
+	input, #sound {
 		background-color: rgba(0,0,0,0.1);
 	}
 }

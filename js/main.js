@@ -1,4 +1,5 @@
 var maxTime = parseInt(localStorage.getItem('maxTime') || '300000')
+var mute = localStorage.getItem('mute') ? true : false
 var started = false
 var audioAuthorized = false
 var wakeLock
@@ -33,7 +34,7 @@ worker.onmessage = e => {
 		if (document.querySelector('section').classList.contains('warning')) document.querySelector('section').classList.remove('warning')
 		if (!document.querySelector('mark').classList.contains('alert')) document.querySelector('mark').classList.add('alert')
 		if (!document.querySelector('section').classList.contains('alert')) document.querySelector('section').classList.add('alert')
-	} else if (e.data >= (maxTime - 14000)) {
+	} else if (!mute && e.data >= (maxTime - 14000)) {
 		if (document.querySelector('audio').currentTime <= 0) {
 			document.querySelector('audio').currentTime = 0
 			document.querySelector('audio').volume = 1
@@ -62,7 +63,7 @@ startCount = () => {
 	try { navigator.wakeLock.request('screen').then(e => wakeLock = e) } catch(e) {}
 	started = true
 	worker.postMessage('start')
-	document.querySelector('button .material-icons').innerText = 'pause'
+	document.querySelector('#play .material-icons').innerText = 'pause'
 	document.querySelector('input').setAttribute('disabled', 'disabled')
 	setMaxTime()
 }
@@ -73,7 +74,7 @@ stopCount = () => {
 	worker.postMessage('stop')
 	document.querySelector('audio').currentTime = 0
 	document.querySelector('mark').classList.remove('started', 'warning', 'alert', 'exceeded')
-	document.querySelector('button .material-icons').innerText = 'play_arrow'
+	document.querySelector('#play .material-icons').innerText = 'play_arrow'
 	document.querySelector('#sand-top').style.setProperty('--h', `0`)
 	document.querySelector('#sand-bottom').style.setProperty('--h', `0`)
 	document.querySelector('section').innerText = '00:00'
@@ -83,8 +84,21 @@ stopCount = () => {
 	try { wakeLock?.release() } catch(e) {}
 }
 
+toggleMute = () => {
+	mute = !mute
+	if (mute) {
+		if (document.querySelector('audio').currentTime > 0) document.querySelector('audio').pause()
+		document.querySelector('#sound .material-icons').innerText = 'music_off'
+		localStorage.setItem('mute', 'true')
+	} else {
+		document.querySelector('#sound .material-icons').innerText = 'music_note'
+		localStorage.removeItem('mute')
+	}
+}
+
 init = () => {
-	document.querySelector('button').onclick = () => toggleCount()
+	document.querySelector('#play').onclick = () => toggleCount()
+	document.querySelector('#sound').onclick = () => toggleMute()
 	window.onkeydown = e => {
 		if (e.keyCode == 13) startCount()
 		if (e.keyCode == 27) stopCount()
@@ -107,6 +121,7 @@ init = () => {
 	const min = Math.floor(maxTime / 60000)
 	const sec = ((maxTime % 60000) / 1000).toFixed(0)
 	document.querySelector('input').value = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
+	if (mute) document.querySelector('#sound .material-icons').innerText = 'music_off'
 }
 
 document.onreadystatechange = () => {
